@@ -69,7 +69,7 @@ make test
 If you don't use the Makefile (or it is corrupted):
 ```sh
 # Compile manually all source files
-gcc -std=c11 -Wall -Wextra -g src/*.c -o expr
+gcc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -o expr ./src/*.c
 
 # Run the program with the input file
 ./expr < tests/test1.in
