@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Compiling..."
-gcc -std=c11 -Wall -Wextra -g src/*.c -o expr || { echo "Compilation failed"; exit 1; }
+gcc -std=c11 -D_POSIX_C_SOURCE=200809L -Wall -Wextra -o expr ./src/*.c || { echo "Compilation failed"; exit 1; }
 
 echo "Running test..."
 ./expr < tests/test1.in > out1.txt || { echo "Execution failed"; exit 1; }
