@@ -22,6 +22,9 @@ Parser *parser_create(const char *input){
     if(p){
         p->lexer = lexer_create(input);
         p->error_msg = NULL;
+        p->current.type = TOK_ERROR;
+        p->current.lexeme = NULL;
+        p->current.pos = 0;
         advance(p); //Load the first token
     }
 
@@ -155,7 +158,7 @@ static AST *parse_primary(Parser *p){
 
             return ast_make_ternary(args[0], args[1], args[2]);
         }
-        else if(op != -1){
+        else if(op != (OpType)-1){
             if(arg_count != 2){
                 if(!p->error_msg){
                     p->error_msg = strdup("Binary opertor requres 2 arguments");

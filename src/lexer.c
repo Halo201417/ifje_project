@@ -20,7 +20,7 @@ Lexer *lexer_create(const char *input){
 }
 
 static void skip_whitespace(Lexer *l){
-    while(isspace(l->input[l->pos])){
+    while(isspace((unsigned char)l->input[l->pos])){
         l->pos++;
     }
 }
@@ -55,7 +55,7 @@ Token lexer_next(Lexer *l){
             return t;
         }
 
-        if(!isspace(l->input[l->pos]) && !(l->input[l->pos] == '/' && l->input[l->pos + 1] == '*')){
+        if(!isspace((unsigned char)l->input[l->pos]) && !(l->input[l->pos] == '/' && l->input[l->pos + 1] == '*')){
             break;
         }
     }
@@ -63,10 +63,10 @@ Token lexer_next(Lexer *l){
     t.pos = l->pos;
 
     //Identifier
-    if(isalpha(l->input[l->pos])){
+    if(isalpha((unsigned char)l->input[l->pos])){
         size_t start = l->pos;
         
-        while(isalpha(l->input[l->pos])){
+        while(isalpha((unsigned char)l->input[l->pos])){
             l->pos++;
         }
 
@@ -83,7 +83,7 @@ Token lexer_next(Lexer *l){
     }
 
     //Number
-    if(isdigit(l->input[l->pos]) || l->input[l->pos] == '+' || l->input[l->pos] == '-' || l->input[l->pos] == '.'){
+    if(isdigit((unsigned char)l->input[l->pos]) || l->input[l->pos] == '+' || l->input[l->pos] == '-' || l->input[l->pos] == '.'){
         size_t start = l->pos;
 
         if(l->input[l->pos] == '+' || l->input[l->pos] == '-'){
@@ -93,7 +93,7 @@ Token lexer_next(Lexer *l){
         //Digit sequence
         int has_digits = 0;
         
-        while(isdigit(l->input[l->pos])){
+        while(isdigit((unsigned char)l->input[l->pos])){
             l->pos++;
             has_digits = 1;
         }
@@ -102,14 +102,14 @@ Token lexer_next(Lexer *l){
         if(l->input[l->pos] == '.'){
             l->pos++;
 
-            while(isdigit(l->input[l->pos])){
+            while((unsigned char)isdigit(l->input[l->pos])){
                 l->pos++;
                 has_digits = 1;
             }
         }
 
         //Exponent
-        if(tolower(l->input[l->pos]) == 'e'){
+        if(tolower((unsigned char)l->input[l->pos]) == 'e'){
             l->pos++;
             
             if(l->input[l->pos] == '+' || l->input[l->pos] == '-'){
@@ -118,7 +118,7 @@ Token lexer_next(Lexer *l){
 
             int exp_digits = 0;
 
-            while(isdigit(l->input[l->pos])){
+            while(isdigit((unsigned char)l->input[l->pos])){
                 l->pos++;
                 exp_digits = 1;
             }
@@ -140,6 +140,9 @@ Token lexer_next(Lexer *l){
         if(t.lexeme){
             strncpy(t.lexeme, l->input + start, len);
             t.lexeme[len] = '\0';
+            t.type = TOK_NUMBER;
+        }
+        else{
             t.type = TOK_ERROR;
         }
 
