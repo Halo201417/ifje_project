@@ -61,10 +61,24 @@ make
 ./expr < tests/test1.in
 ```
 
+Run automated tests:
+```sh
+make test
+```
+
 If you don't use the Makefile (or it is corrupted):
 ```sh
-gcc -std=c11 -O2 -Wall -Wextra -o expr src/*.c
+# Compile manually all source files
+gcc -std=c11 -Wall -Wextra -g src/*.c -o expr
+
+# Run the program with the input file
 ./expr < tests/test1.in
+```
+
+Or check the program's output against the expected output:
+```sh
+./expr < tests/test1.in > out1.txt
+diff -u tests/test1.out out1.txt
 ```
 
 ---
