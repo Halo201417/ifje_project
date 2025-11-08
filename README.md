@@ -106,3 +106,4 @@ diff -u tests/test1.out out1.txt
 ## 6.Tests included
 - `tests/test1.in` - mandatory input
 - `tests/test1.out` - expected output
+- `extras/run_tests.sh` - automatic fallback
