@@ -5,6 +5,10 @@
 #include <string.h>
 #include <stdio.h>
 
+
+/**
+ * Principal structure of the parser (syntax analyzer)
+ */
 struct Parser{
     Lexer *lexer;
     Token current;
@@ -16,6 +20,13 @@ static AST *parse_expr(Parser *p);
 static AST *parse_primary(Parser *p);
 static OpType get_op_from_ident(const char *ident);
 
+
+/**
+ * Creates and initializes the new parser
+ * 
+ * @param input: the string of text that contains the expression to be analyzed
+ * @return a pointer to the initializes parser structure
+ */
 Parser *parser_create(const char *input){
     Parser *p = malloc(sizeof(Parser));
 
@@ -25,12 +36,19 @@ Parser *parser_create(const char *input){
         p->current.type = TOK_ERROR;
         p->current.lexeme = NULL;
         p->current.pos = 0;
-        advance(p); //Load the first token
+        advance(p); //Loads the first token
     }
 
     return p;
 }
 
+
+/**
+ * The main entry point of the parser
+ * 
+ * Calls to the `parse_expr` to build the AST
+ * If tokens remain after analysis, it is considered a syntax error
+ */
 AST *parser_parse(Parser *p){
     AST *ast = parse_expr(p);
 
@@ -46,10 +64,18 @@ AST *parser_parse(Parser *p){
     return ast;
 }
 
+
+/**
+ * Returns the error message from the current parser
+ */
 const char *parser_error(Parser *p){
     return p->error_msg;
 }
 
+
+/**
+ * Frees all the resources associated to the parser
+ */
 void parser_destroy(Parser *p){
     lexer_destroy(p->lexer);
     if(p->error_msg){
@@ -59,22 +85,36 @@ void parser_destroy(Parser *p){
     free(p);
 }
 
+
+/**
+ * Advances to the next token in the input stream
+ * Frees the previous token before getting the next one
+ */
 static void advance(Parser *p){
     token_free(&p->current);
     p->current = lexer_next(p->lexer);
 }
 
+
+/**
+ * Analyzes a generic expression
+ */
 static AST *parse_expr(Parser *p){
     return parse_primary(p);
 }
 
+
+/**
+ * Analyzes a "primary" element: a literal number or a function call
+ */
 static AST *parse_primary(Parser *p){
+    //Literal number
     if(p->current.type == TOK_NUMBER){
         AST *num = ast_make_number(p->current.lexeme);
         advance(p);
         return num;
     }
-    else if(p->current.type == TOK_IDENT){
+    else if(p->current.type == TOK_IDENT){  //Identifier
         char *ident = strdup(p->current.lexeme);
         advance(p);
 
@@ -143,6 +183,7 @@ static AST *parse_primary(Parser *p){
         OpType op = get_op_from_ident(ident);
         free(ident);
         
+        //Special case: ternary operator
         if(op == OP_TERN){
             if(arg_count != 3){
                 if(!p->error_msg){
@@ -158,7 +199,7 @@ static AST *parse_primary(Parser *p){
 
             return ast_make_ternary(args[0], args[1], args[2]);
         }
-        else if(op != (OpType)-1){
+        else if(op != (OpType)-1){  //Binary operators
             if(arg_count != 2){
                 if(!p->error_msg){
                     p->error_msg = strdup("Binary opertor requres 2 arguments");
@@ -185,7 +226,7 @@ static AST *parse_primary(Parser *p){
             return NULL;
         }
     }
-    else{
+    else{   //Neither a number nor identifier
         if(!p->error_msg){
             p->error_msg = strdup("Expected number or function call");
         }
@@ -194,6 +235,10 @@ static AST *parse_primary(Parser *p){
     }
 }
 
+
+/**
+ * Translates a function name into its corresponding operation type
+ */
 static OpType get_op_from_ident(const char *ident){
     if(strcmp(ident, "add") == 0){
         return OP_ADD;

@@ -3,11 +3,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Internal structure of the lexer
+ */
 struct Lexer{
     const char *input;
     size_t pos;
 };
 
+
+/**
+ * Creates a new lexer for the `input` string
+ * The function does not copy the string, it just ensures that the string
+ * remains valid while the lexer is being used
+ * 
+ * @param input: string to be tokenized
+ * @return a pointer to a new lexer structure or null if memory allocation fails
+ */
 Lexer *lexer_create(const char *input){
     Lexer *l = malloc(sizeof(Lexer));
 
@@ -19,26 +31,50 @@ Lexer *lexer_create(const char *input){
     return l;
 }
 
+
+/**
+ * Increases the lexer position while there are spaces
+ */
 static void skip_whitespace(Lexer *l){
     while(isspace((unsigned char)l->input[l->pos])){
         l->pos++;
     }
 }
 
+
+/**
+ * Skip any C-style comment block
+ * If "/*" is found the position advances to "* /" or to the end of the input
+ * If the comment block does not close, it leaves `pos` in the end of the string
+ */
 static void skip_comment(Lexer *l){
     if(l->input[l->pos] == '/' && l->input[l->pos + 1] == '*'){
-        l->pos += 2;
+        l->pos += 2;    //Skips "/*"
 
+        //Advances to "*/" or until '\0'
         while(l->input[l->pos] && !(l->input[l->pos] == '*' && l->input[l->pos + 1] == '/')){
             l->pos++;
         }
 
+        //If "*/" is foudn it skips these two characters
         if(l->input[l->pos]){
             l->pos += 2;
         }
     }
 }
 
+
+/**
+ * Returns the next token from the input
+ * 
+ * Process:
+ * 1. Skip spaces and comments
+ * 2. Determine the token type
+ * 3. For tokens tat require a lexeme a substring is assigned and copied
+ * 
+ * @param l: a pointer to the lexer
+ * @return the next token or TOK_EOF when the end is reached
+ */
 Token lexer_next(Lexer *l){
     Token t = {.type = TOK_ERROR, .lexeme = NULL, .pos = l->pos};
 
@@ -172,6 +208,11 @@ Token lexer_next(Lexer *l){
     return t;
 }
 
+
+/**
+ * Frees the memory associated with the token's lexeme
+ * This must be called every time we stop using a token that contains a lexeme
+ */
 void token_free(Token *t){
     if(t->lexeme){
         free(t->lexeme);
@@ -179,6 +220,10 @@ void token_free(Token *t){
     }
 }
 
+
+/**
+ * Frees the lexer
+ */
 void lexer_destroy(Lexer *l){
     free(l);
 }

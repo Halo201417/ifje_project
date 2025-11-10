@@ -1,11 +1,30 @@
 #ifndef AST_H
 #define AST_H
 
+/**
+ * @file ast.h
+ * @brief Definition of the Abstract Syntax Tree (AST) structure and its associated functions to
+ *        construct, free and manage expressions
+ * 
+ * The AST represents a hierarchical structure of a mathematical expression
+ * Every node can be a number (leaf) or an operation (internal node)
+ */
+
+
+/**
+ * @enum NodeType
+ * @brief Indicates the node type in the tree 
+ */
 typedef enum{
     NODE_NUMBER,
     NODE_OP
 } NodeType;
 
+
+/**
+ * @enum OpType
+ * @brief Operation types supported by the tree
+ */
 typedef enum{
     OP_ADD,
     OP_SUB,
@@ -16,17 +35,24 @@ typedef enum{
     OP_TERN
 } OpType;
 
+
+/**
+ * @struct AST
+ * @brief Represents a node in the AST
+ * 
+ * Structure contents depend on the `type`
+ */
 typedef struct AST{
     NodeType type;
 
     // If type is NODE_NUMBER
     char *num_text;
-    double num_value;   //Parse with strtod
+    double num_value;   //Parsed with strtod
 
     //If type is NODE_OP
     OpType op;
     struct AST *left;
-    struct AST *middle; //If binary == NULL
+    struct AST *middle; //Null for binary operations
     struct AST *right;
 } AST;
 

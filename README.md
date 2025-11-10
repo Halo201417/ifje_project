@@ -103,7 +103,18 @@ diff -u tests/test1.out out1.txt
 
 - Syntactic errors: missing parentheses/commas, incorrect number of arguments for a function
 
+---
+
 ## 6.Tests included
 - `tests/test1.in` - mandatory input
 - `tests/test1.out` - expected output
 - `extras/run_tests.sh` - automatic fallback
+
+---
+
+## 7.Use of AI
+The development precess for this project utilized AI tools **solely for assistance** in the following areas:
+- **Grammar and Language**: Correcting and refining the English grammar, phrasing, and vocabulary in the source code comments to ensure clarity and professionalism.
+- **Structural Setup**: Generating the initial file structure and directory hierarchy for the repository.
+- **Build Automation**: Creating the primary `MakeFile` for compiling, running, and testing the project.
+- **Documentation Formatting**: Enhancing the overall formatting and readability of this `README.md`file. 

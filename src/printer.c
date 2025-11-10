@@ -3,8 +3,24 @@
 #include <string.h>
 #include <stdio.h>
 
+
+/**
+ * Recursive function to convert an AST subtree into a string.
+ * It manages operator precedence and associativity to determine parentheses placement.
+ * @param a: the current AST node
+ * @param parent_prec: the precedence level of the parent operator
+ * @param is_right_child: flag indicating if the current node is the right child of its parent
+ * @return a dynamically allocated string representing the expression
+ */
 static char *ast_to_string_rec(const AST *a, int parent_prec, int is_right_child);
 
+
+/**
+ * Main entry function to convert the AST root into an infix string.
+ * Starts the recursive process with the lowest parent precedence (0)
+ * @param a: the root of the AST
+ * @return a dynamically allocated string representing the full expression
+ */
 char *ast_to_string(const AST *a){
     return ast_to_string_rec(a, 0, 0);
 }
@@ -20,7 +36,7 @@ static char *ast_to_string_rec(const AST *a, int parent_prec, int is_right_child
     }
 
     const char *op_str = NULL;
-    int spaces = 1; //put spaces around the operator
+    int spaces = 1; //Flag to indicate if spaces should be place around the operator
 
     switch (a->op){
         case OP_ADD:
@@ -55,15 +71,19 @@ static char *ast_to_string_rec(const AST *a, int parent_prec, int is_right_child
     int my_prec = ast_prec(a);
     int needs_parens = 0;
 
+    //Precedence check
     if(my_prec < parent_prec){
         needs_parens = 1;
     }
+    //Associativity check
     else if(my_prec == parent_prec){
+        //Right-associative operators
         if(ast_is_right_assoc(a->op)){
             if(!is_right_child){
                 needs_parens = 1;
             }
         }
+        //Left-associative operators
         else{
             if(is_right_child){
                 needs_parens = 1;
@@ -71,6 +91,7 @@ static char *ast_to_string_rec(const AST *a, int parent_prec, int is_right_child
         }
     }
 
+    //Special handling
     if(a->op == OP_TERN){
         char *L = ast_to_string_rec(a->left, my_prec, 0);
         char *M = ast_to_string_rec(a->middle, my_prec, 0);
