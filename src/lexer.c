@@ -44,7 +44,8 @@ static void skip_whitespace(Lexer *l){
 
 /**
  * Skip any C-style comment block
- * If "/*" is found the position advances to the final part of the comment or to the end of the input
+ * If a open comment C-style comment block is found the position advances to the final 
+ * part of the comment or to the end of the input
  * If the comment block does not close, it leaves `pos` in the end of the string
  */
 static void skip_comment(Lexer *l){
